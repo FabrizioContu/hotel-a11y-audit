@@ -1,0 +1,12 @@
+{
+  "name": "hotel-a11y-audit",
+  "version": "0.0.0",
+  "description": "Open source EAA/WCAG 2.1 AA accessibility scanner for hotel booking flows",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p ."
+  }
+}

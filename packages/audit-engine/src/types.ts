@@ -72,6 +72,13 @@ export interface KeyboardTabThrough {
 }
 
 export interface ThirdPartyIframe {
+  /**
+   * Discriminator (R4.2 literal text) so this finding self-identifies as an
+   * informational, non-defect signal even out of the context of the
+   * `thirdPartyIframes` array key (e.g. if a downstream consumer flattens
+   * findings from multiple arrays into one list).
+   */
+  kind: "third-party-booking-iframe";
   url: string;
   hostname: string;
   /** Known-provider label (e.g. 'booking', 'siteminder') or null when unrecognized. */
@@ -81,6 +88,12 @@ export interface ThirdPartyIframe {
 }
 
 export interface PageError {
+  /**
+   * Which pipeline stage failed. Determines whether sibling fields on
+   * `PageResult` (`axe`, `thirdPartyIframes`, `keyboardTabThrough`) can
+   * still be present alongside this error — see `PageResult.axe`'s doc
+   * comment for the full mutual-exclusivity semantics.
+   */
   phase: "navigation" | "axe" | "keyboard" | "iframe";
   /** Machine-readable reason, e.g. 'NAV_TIMEOUT' | 'AXE_FAILED'. */
   code: string;
@@ -92,12 +105,33 @@ export interface PageResult {
   pageType: PageType;
   /** Two-hop discovery seam (D1): additive 'hop2' value can be added later. */
   source: "home" | "discovered";
-  /** Absent iff pageError.phase is 'navigation' or 'axe'. */
+  /**
+   * Present iff axe ran to completion for this page. `axe` and `pageError`
+   * are mutually exclusive ONLY when `pageError.phase` is `'navigation'` or
+   * `'axe'` (nothing ran yet, or axe itself is what failed). When a LATER
+   * stage fails (`pageError.phase === 'iframe' | 'keyboard'`), `axe` MAY be
+   * present alongside `pageError` — a downstream hiccup after a successful
+   * axe run must not discard good diagnostic data. This is the intentional
+   * "honest-diagnostic" behavior from design §7, amended into the delta
+   * spec's R5.3/R1.4 wording post-verify (see spec artifact amendment note,
+   * dated 2026-07-10).
+   */
   axe?: AxeSubResult;
-  /** Present only for booking_form pages. */
+  /**
+   * Present only for `booking_form` pages. Absent when `pageError.phase`
+   * is `'keyboard'` (the check itself threw) or an earlier stage never
+   * reached it.
+   */
   keyboardTabThrough?: KeyboardTabThrough;
+  /**
+   * Absent when `pageError.phase` is `'iframe'` (the check itself threw) or
+   * an earlier stage never reached it.
+   */
   thirdPartyIframes?: ThirdPartyIframe[];
-  /** Present => this page degraded; the scan continued regardless (R1.4). */
+  /**
+   * Present => this page degraded at `phase`; the scan continued
+   * regardless (R1.4). MAY coexist with `axe` — see `axe`'s doc comment.
+   */
   pageError?: PageError;
   durationMs: number;
 }

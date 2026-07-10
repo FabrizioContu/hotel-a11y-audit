@@ -116,6 +116,25 @@ async function seedFocus(page: Page): Promise<void> {
   });
 }
 
+/**
+ * Determines whether a focused element actually RENDERS a visible focus
+ * indicator (R3.2), by comparing the element's computed style while
+ * focused against a baseline captured immediately after blurring it (and
+ * restoring focus right after, so the Tab traversal is not disturbed).
+ *
+ * `:focus-visible` is deliberately NOT consulted here. It reflects
+ * Chromium's *input-modality* heuristic (was this focus event likely
+ * caused by keyboard navigation?), NOT whether an indicator is actually
+ * painted after author CSS runs. An `outline: none` field with no
+ * alternative style still matches `:focus-visible` in Chromium, which
+ * previously made this function report `focusVisible: true` for a field
+ * with literally no rendered indicator (fixed post-verify, C1 — see the
+ * `Fixed :focus-visible modality-vs-rendering gap in checkTabThrough`
+ * memory entry for the empirical proof). Any rendered indicator — an
+ * explicit outline, a box-shadow that appears/changes on focus, or a
+ * border color/width change on focus — counts as visible; none of them
+ * imply a pass/fail compliance verdict, only a heuristic signal (R7.1/R7.2).
+ */
 async function readFocusSnapshot(page: Page): Promise<FocusSnapshot> {
   return page.evaluate(() => {
     const el = document.activeElement as HTMLElement | null;
@@ -130,18 +149,40 @@ async function readFocusSnapshot(page: Page): Promise<FocusSnapshot> {
     const nameAttr = name ? `[name=${name}]` : "";
     const descriptor = `${tag}${id}${classes}${nameAttr}`;
 
-    let focusVisible = false;
-    try {
-      focusVisible = el.matches(":focus-visible");
-    } catch {
-      focusVisible = false;
-    }
-    if (!focusVisible) {
+    const snapshotStyle = (): {
+      outlineStyle: string;
+      outlineWidth: string;
+      boxShadow: string;
+      borderColor: string;
+      borderWidth: string;
+    } => {
       const style = window.getComputedStyle(el);
-      const hasOutline = style.outlineStyle !== "none" && style.outlineWidth !== "0px";
-      const hasBoxShadow = style.boxShadow !== "none" && style.boxShadow !== "";
-      focusVisible = hasOutline || hasBoxShadow;
-    }
+      return {
+        outlineStyle: style.outlineStyle,
+        outlineWidth: style.outlineWidth,
+        boxShadow: style.boxShadow,
+        borderColor: style.borderColor,
+        borderWidth: style.borderWidth,
+      };
+    };
+
+    const focusedStyle = snapshotStyle();
+
+    // Baseline: blur momentarily to read the element's un-focused rendering,
+    // then restore focus so the traversal loop is unaffected. Synchronous —
+    // no Tab press is involved, so this cannot itself advance the trace.
+    el.blur();
+    const baselineStyle = snapshotStyle();
+    el.focus();
+
+    const hasOutline = focusedStyle.outlineStyle !== "none" && focusedStyle.outlineWidth !== "0px";
+    const boxShadowChanged =
+      focusedStyle.boxShadow !== "none" && focusedStyle.boxShadow !== baselineStyle.boxShadow;
+    const borderChanged =
+      focusedStyle.borderColor !== baselineStyle.borderColor ||
+      focusedStyle.borderWidth !== baselineStyle.borderWidth;
+
+    const focusVisible = hasOutline || boxShadowChanged || borderChanged;
 
     return { descriptor, isBody: false, focusVisible };
   });

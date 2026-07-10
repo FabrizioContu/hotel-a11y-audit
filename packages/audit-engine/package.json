@@ -19,7 +19,8 @@
     }
   },
   "scripts": {
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "validate": "node validation/run.mjs"
   },
   "dependencies": {
     "@axe-core/playwright": "^4.12.1",

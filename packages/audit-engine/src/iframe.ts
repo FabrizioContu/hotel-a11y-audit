@@ -74,6 +74,7 @@ export async function detectIframes(page: Page, origin: string): Promise<ThirdPa
     }
 
     findings.push({
+      kind: "third-party-booking-iframe",
       url: frameUrl,
       hostname,
       provider: providerLabel(hostname),

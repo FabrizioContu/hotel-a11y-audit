@@ -199,13 +199,25 @@ export async function discoverPages(
   });
 
   // A single URL cannot serve two page types (R2.3): if it won for more
-  // than one, keep it only for the higher-priority type.
+  // than one, keep it only for the higher-priority type (PRIORITY_ORDER is
+  // iterated highest-priority-first, so the first claimant wins).
   const assignedUrls = new Set<string>();
+  const urlOwner = new Map<string, KeywordPageType>();
   const winners: Array<{ pageType: KeywordPageType; winner: Winner }> = [];
+  // Tracks page types that DID match a link but lost the URL to a
+  // higher-priority type — used to give these an honest "reassigned" note
+  // (W3) instead of the misleading "no link matched" wording below.
+  const reassignedTo = new Map<KeywordPageType, KeywordPageType>();
   for (const pageType of PRIORITY_ORDER) {
     const winner = bestPerType.get(pageType);
-    if (!winner || assignedUrls.has(winner.url)) continue;
+    if (!winner) continue;
+    if (assignedUrls.has(winner.url)) {
+      const owner = urlOwner.get(winner.url);
+      if (owner) reassignedTo.set(pageType, owner);
+      continue;
+    }
     assignedUrls.add(winner.url);
+    urlOwner.set(winner.url, pageType);
     winners.push({ pageType, winner });
   }
 
@@ -241,7 +253,22 @@ export async function discoverPages(
   }
   const foundTypes = new Set(winners.map((w) => w.pageType));
   for (const pageType of PRIORITY_ORDER) {
-    if (!foundTypes.has(pageType)) {
+    if (foundTypes.has(pageType)) continue;
+
+    const owner = reassignedTo.get(pageType);
+    if (owner) {
+      // W3: a link DID match this type's keyword dictionary — it just lost
+      // the URL to a higher-priority type (R2.3 dedup). Say so honestly
+      // instead of implying no candidate was found at all.
+      notes.push({
+        pageType,
+        status: "not_found",
+        detail:
+          `A same-origin link matched the ${pageType} keyword dictionary, but its URL ` +
+          `was already assigned to the higher-priority page type '${owner}' (R2.3 ` +
+          `dedup: one URL cannot serve two page types).`,
+      });
+    } else {
       notes.push({
         pageType,
         status: "not_found",

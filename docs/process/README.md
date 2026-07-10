@@ -17,3 +17,4 @@ Los artefactos técnicos SDD (exploraciones, proposals, specs, tasks) viven en e
 | 06  | Apply batch 2 — discovery de páginas clave + CLI      | [06-apply-batch-2-fase-1.md](06-apply-batch-2-fase-1.md) |
 | 07  | Verify Fase 1 — FAIL: hallazgo crítico en foco        | [07-verify-fase-1.md](07-verify-fase-1.md)               |
 | 08  | Fix batch 3 + re-verify — PASS                        | [08-fix-reverify-fase-1.md](08-fix-reverify-fase-1.md)   |
+| 09  | Criterios de salida — validación con hoteles BCN      | [09-exit-criteria-fase-1.md](09-exit-criteria-fase-1.md) |

@@ -1,5 +1,6 @@
 node_modules/
 dist/
+.atl/
 .next/
 *.log
 .env

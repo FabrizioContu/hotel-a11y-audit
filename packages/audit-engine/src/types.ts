@@ -120,7 +120,7 @@ export interface AuditResult {
   pages: PageResult[];
   /** Honest coverage gaps ("diagnóstico inicial" positioning, R2.5). */
   discoveryNotes: DiscoveryNote[];
-  /** Fixed string: initial diagnostic, NOT a compliance certification (SPEC R7.1/R7.2). */
+  /** Fixed string: initial diagnostic only, not a legal/official guarantee (SPEC R7.1/R7.2). */
   disclaimer: string;
 }
 
@@ -141,5 +141,5 @@ export const ENGINE_VERSION = "0.0.0";
 
 export const DISCLAIMER =
   "This is an initial automated accessibility diagnostic (diagnóstico inicial). " +
-  "It does NOT constitute a compliance certification and MUST NOT be interpreted " +
-  "as legal proof of EAA/WCAG conformance.";
+  "It is NOT a legal or official audit, and it MUST NOT be relied upon as proof " +
+  "of EAA/WCAG adherence.";

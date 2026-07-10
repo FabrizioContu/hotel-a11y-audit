@@ -1,5 +1,6 @@
 import { launchBrowser, newBoundedPage } from "./browser.js";
 import { scanPage } from "./page-scan.js";
+import { discoverPages, notFoundAllNotes } from "./discovery.js";
 import { HomeUnreachableError } from "./errors.js";
 import { normalizeUrl, clamp } from "./util.js";
 import { ALL_LANGUAGES, DEFAULT_OPTIONS, DISCLAIMER, ENGINE_VERSION } from "./types.js";
@@ -29,12 +30,7 @@ function resolveOptions(options?: AuditOptions): ResolvedOptions {
 
 /**
  * Orchestrator (design §1/§3). Owns browser lifecycle, the FATAL vs DEGRADE
- * boundary (design §7), and result assembly.
- *
- * NOTE (this batch / Commit 1 "single-page axe scan"): only the home page is
- * scanned. Key-page discovery (R2.x) is wired in during Commit 2 (Phase 3)
- * — see design §3/§4 and tasks.md 3.3. `discoveryNotes` is therefore always
- * empty here; that's expected for this milestone, not a bug.
+ * boundary (design §7), key-page discovery, and result assembly.
  */
 export async function runAudit(url: string, options?: AuditOptions): Promise<AuditResult> {
   const start = Date.now();
@@ -48,6 +44,7 @@ export async function runAudit(url: string, options?: AuditOptions): Promise<Aud
   });
 
   const pages: PageResult[] = [];
+  let discoveryNotes: AuditResult["discoveryNotes"] = [];
 
   try {
     const homePage = await newBoundedPage(context, opts.navTimeoutMs);
@@ -57,20 +54,50 @@ export async function runAudit(url: string, options?: AuditOptions): Promise<Aud
       origin,
       opts,
     );
-    await homePage.close().catch(() => undefined);
 
     // FATAL: home page itself unreachable — the whole audit is meaningless
     // without it (it's also the discovery source, design §7). scanPage
     // always degrades navigation failures into a pageError; here we
     // escalate that specific case for the home page only.
     if (homeResult.pageError?.phase === "navigation") {
+      await homePage.close().catch(() => undefined);
       throw new HomeUnreachableError(normalizedUrl, new Error(homeResult.pageError.message));
     }
 
     pages.push(homeResult);
 
-    // Commit 2 (Phase 3) inserts key-page discovery + the discovered-page
-    // scan loop here, appending to `pages` and populating `discoveryNotes`.
+    // Key-page discovery (D1, single-hop) reuses the already-loaded home
+    // page for its $$eval link scrape (design §3: "home is scanned AND
+    // reused as the discovery source in one load") — close it only after.
+    const discovery = await discoverPages(homePage, normalizedUrl, origin, {
+      maxPages: opts.maxPages,
+      languageHints: opts.languageHints,
+    }).catch((err: unknown) =>
+      // Defensive last resort — discoverPages() itself is designed to
+      // never throw (DEGRADE, design §7), but a discovery bug must never
+      // sink the whole scan either.
+      ({
+        pages: [],
+        notes: notFoundAllNotes(
+          `Discovery failed unexpectedly: ${err instanceof Error ? err.message : String(err)}`,
+        ),
+      }),
+    );
+    discoveryNotes = discovery.notes;
+
+    await homePage.close().catch(() => undefined);
+
+    for (const discovered of discovery.pages) {
+      const page = await newBoundedPage(context, opts.navTimeoutMs);
+      const result = await scanPage(
+        page,
+        { url: discovered.url, pageType: discovered.pageType, source: "discovered" },
+        origin,
+        opts,
+      );
+      await page.close().catch(() => undefined);
+      pages.push(result);
+    }
   } finally {
     await context.close().catch(() => undefined);
     await browser.close().catch(() => undefined);
@@ -82,7 +109,7 @@ export async function runAudit(url: string, options?: AuditOptions): Promise<Aud
     durationMs: Date.now() - start,
     engineVersion: ENGINE_VERSION,
     pages,
-    discoveryNotes: [],
+    discoveryNotes,
     disclaimer: DISCLAIMER,
   };
 }

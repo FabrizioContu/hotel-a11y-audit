@@ -17,11 +17,11 @@ Fases 3 y 4 del checklist (14/14 tareas): descubrimiento de páginas clave y CLI
 
 ## Verificación del batch
 
-| Gate | Resultado |
-|---|---|
-| `tsc -p packages/audit-engine --noEmit` | ✅ limpio |
-| `npm run lint` | ✅ limpio |
-| Smoke discovery + CLI end-to-end | ✅ contra mozilla.org / wikipedia.org / gnu.org (multi-página reales) |
+| Gate                                    | Resultado                                                             |
+| --------------------------------------- | --------------------------------------------------------------------- |
+| `tsc -p packages/audit-engine --noEmit` | ✅ limpio                                                             |
+| `npm run lint`                          | ✅ limpio                                                             |
+| Smoke discovery + CLI end-to-end        | ✅ contra mozilla.org / wikipedia.org / gnu.org (multi-página reales) |
 
 **Limitación registrada**: las webs de hotel reales no fueron alcanzables desde el entorno del agente (red restringida). La validación de criterios de salida (fase 5: 3 webs de hotel, <90s) queda explícitamente pendiente y necesita red sin restricciones.
 

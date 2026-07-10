@@ -15,3 +15,5 @@ Los artefactos técnicos SDD (exploraciones, proposals, specs, tasks) viven en e
 | 04  | Tasks Fase 1 — checklist de implementación            | [04-tasks-fase-1.md](04-tasks-fase-1.md)                 |
 | 05  | Apply batch 1 — infra + scan axe de página única      | [05-apply-batch-1-fase-1.md](05-apply-batch-1-fase-1.md) |
 | 06  | Apply batch 2 — discovery de páginas clave + CLI      | [06-apply-batch-2-fase-1.md](06-apply-batch-2-fase-1.md) |
+| 07  | Verify Fase 1 — FAIL: hallazgo crítico en foco        | [07-verify-fase-1.md](07-verify-fase-1.md)               |
+| 08  | Fix batch 3 + re-verify — PASS                        | [08-fix-reverify-fase-1.md](08-fix-reverify-fase-1.md)   |

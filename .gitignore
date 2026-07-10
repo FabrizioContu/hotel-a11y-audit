@@ -6,3 +6,6 @@ dist/
 .env
 .env.local
 .DS_Store
+
+# Scans locales de práctica (no versionar)
+scans/

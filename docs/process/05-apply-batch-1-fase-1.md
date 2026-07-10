@@ -12,12 +12,12 @@ Implementación de las fases 1 y 2 del checklist (15/15 tareas): toda la infraes
 
 ## Verificación del batch
 
-| Gate | Resultado |
-|---|---|
-| `tsc -p packages/audit-engine --noEmit` | ✅ limpio |
-| `npm run lint` | ✅ limpio |
-| Smoke test (`example.com`) | ✅ JSON con 2 violaciones, 0 `pageError` |
-| Dominio inalcanzable | ✅ `HomeUnreachableError` fatal (no fallo silencioso) |
+| Gate                                    | Resultado                                             |
+| --------------------------------------- | ----------------------------------------------------- |
+| `tsc -p packages/audit-engine --noEmit` | ✅ limpio                                             |
+| `npm run lint`                          | ✅ limpio                                             |
+| Smoke test (`example.com`)              | ✅ JSON con 2 violaciones, 0 `pageError`              |
+| Dominio inalcanzable                    | ✅ `HomeUnreachableError` fatal (no fallo silencioso) |
 
 ## Desvíos respecto al design (justificados)
 

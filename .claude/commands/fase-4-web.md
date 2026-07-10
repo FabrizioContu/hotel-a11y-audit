@@ -18,6 +18,8 @@ npm run build && npm run lint
 # API levantada y un scan+informe funcionando por curl
 ```
 
+**Branching (regla del repo)**: NUNCA trabajes directo en `main`. Cada batch arranca con `git checkout -b <tipo>/<slug>` desde `main` (ej. `feat/fase-4-landing`, `feat/fase-4-report-view`); el merge a `main` lo decide el usuario.
+
 ## 1. Objetivo y criterio de salida (SPEC §5 Fase 4, literal)
 
 > Landing (con disclaimer), form, página de informe con las 2 capas, export PDF, i18n de UI.
@@ -122,6 +124,6 @@ Este batch es el entrenamiento WCAG práctico del autor (SPEC §8). Tu trabajo: 
 2. `docs/process/14-fase-4-web.md` + fila en el índice del README de process.
 3. Documentar deploy: `docs/deploy-vercel.md` breve (proyecto Vercel apuntando a `apps/web`, root directory, `NEXT_PUBLIC_API_URL` a la URL de Railway). El deploy lo ejecuta el usuario.
 4. `mem_save` de decisiones/gotchas (especialmente los hallazgos que axe no detectó) + `mem_session_summary`.
-5. Conventional commits, sin atribución IA, gates en verde.
+5. Conventional commits, sin atribución IA, gates en verde. Siempre en la branch de la tarea, nunca directo en `main`.
 
 Siguiente fase: `/fase-5-lanzamiento`.

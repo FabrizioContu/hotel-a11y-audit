@@ -20,6 +20,8 @@ npm run build && npm run lint
 
 Dato de producto clave (validado con datos en `docs/process/09-exit-criteria-fase-1.md`): **0 de 4 hoteles reales tenían el motor de reservas en su propio dominio.** El hallazgo de iframe de terceros es CENTRAL al informe, no un edge case (SPEC §6 fila 1).
 
+**Branching (regla del repo)**: NUNCA trabajes directo en `main`. Cada batch arranca con `git checkout -b <tipo>/<slug>` desde `main` (ej. `feat/fase-3-executive-summary`, `feat/fase-3-i18n`); el merge a `main` lo decide el usuario.
+
 ## 1. Objetivo y criterio de salida (SPEC §5 Fase 3, literal)
 
 > Integración Claude: resumen ejecutivo + generación en 4 idiomas + glosario. Guardar en `reports`.
@@ -218,6 +220,6 @@ Persistencia en `reports`: `executive_json` (objeto), `executive_md` (render mar
 1. Criterio del SPEC verificado: mismo scan → informe coherente en 4 idiomas (tabla del script).
 2. `docs/process/13-fase-3-informe-ia.md` (formato narrativo de siempre) + fila en el índice del README de process. Incluir: coste real medido por informe, ejemplo de hallazgo de iframe redactado, y cualquier desvío.
 3. `mem_save` de decisiones/gotchas + `mem_session_summary`.
-4. Conventional commits, sin atribución IA, gates en verde antes de cada commit.
+4. Conventional commits, sin atribución IA, gates en verde antes de cada commit. Siempre en la branch de la tarea, nunca directo en `main`.
 
 Siguiente fase: `/fase-4-web`.

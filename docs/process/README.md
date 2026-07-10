@@ -19,3 +19,4 @@ Los artefactos técnicos SDD (exploraciones, proposals, specs, tasks) viven en e
 | 08  | Fix batch 3 + re-verify — PASS                        | [08-fix-reverify-fase-1.md](08-fix-reverify-fase-1.md)   |
 | 09  | Criterios de salida — validación con hoteles BCN      | [09-exit-criteria-fase-1.md](09-exit-criteria-fase-1.md) |
 | 10  | Archive — cierre del ciclo Fase 1                     | [10-archive-fase-1.md](10-archive-fase-1.md)             |
+| 11  | Playbooks pre-cocinados Fases 2-5 (slash commands)    | [11-playbooks-fases-2-5.md](11-playbooks-fases-2-5.md)   |

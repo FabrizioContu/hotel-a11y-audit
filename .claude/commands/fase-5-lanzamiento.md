@@ -128,4 +128,4 @@ Caso de estudio para fabriziocontu.dev: misma estructura expandida + metodologí
 1. `docs/process/15-fase-5-lanzamiento.md` + índice del README de process. Incluir: URL del repo público, versión npm, tabla de agregados, y estado de cada checkpoint (publicado o pendiente).
 2. Registrar en el doc los items para el post-lanzamiento (SPEC §7: revisar métricas a los 3 meses — sugerir al usuario un recordatorio de calendario).
 3. `mem_save` del cierre (URLs públicas, decisiones de publicación, datos agregados clave) + `mem_session_summary`.
-4. Conventional commits, sin atribución IA, siempre en la branch de la tarea (nunca directo en `main`). Y el recordatorio final: **ningún material público promete "cumplimiento" ni "auditoría experta"** — diagnóstico inicial, siempre.
+4. Conventional commits, mensajes en inglés, sin atribución IA, siempre en la branch de la tarea (nunca directo en `main`). Y el recordatorio final: **ningún material público promete "cumplimiento" ni "auditoría experta"** — diagnóstico inicial, siempre.

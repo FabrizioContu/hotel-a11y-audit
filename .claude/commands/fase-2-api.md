@@ -239,6 +239,6 @@ RATE_LIMIT_WINDOW_MINUTES=60
 1. Verificación final contra el criterio del SPEC: flujo completo por curl (POST → polling → JSON persistido) documentado con outputs reales.
 2. Escribir `docs/process/12-fase-2-api.md` siguiendo el formato narrativo de los docs 05-08 (qué se hizo, gates, desvíos justificados, siguiente paso) y añadir la fila al índice de `docs/process/README.md`.
 3. `mem_save` (engram): decisiones tomadas, desvíos del playbook, gotchas encontrados. `mem_session_summary` al terminar.
-4. Reglas de commits: conventional commits, **sin** Co-Authored-By ni atribución IA. No commitear con gates en rojo. Siempre en la branch de la tarea, nunca directo en `main`.
+4. Reglas de commits: conventional commits, mensajes **en inglés**, **sin** Co-Authored-By ni atribución IA. No commitear con gates en rojo. Siempre en la branch de la tarea, nunca directo en `main`.
 
 Siguiente fase: `/fase-3-informe-ia`.

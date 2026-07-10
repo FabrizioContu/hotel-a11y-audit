@@ -220,6 +220,6 @@ Persistencia en `reports`: `executive_json` (objeto), `executive_md` (render mar
 1. Criterio del SPEC verificado: mismo scan → informe coherente en 4 idiomas (tabla del script).
 2. `docs/process/13-fase-3-informe-ia.md` (formato narrativo de siempre) + fila en el índice del README de process. Incluir: coste real medido por informe, ejemplo de hallazgo de iframe redactado, y cualquier desvío.
 3. `mem_save` de decisiones/gotchas + `mem_session_summary`.
-4. Conventional commits, sin atribución IA, gates en verde antes de cada commit. Siempre en la branch de la tarea, nunca directo en `main`.
+4. Conventional commits, mensajes en inglés, sin atribución IA, gates en verde antes de cada commit. Siempre en la branch de la tarea, nunca directo en `main`.
 
 Siguiente fase: `/fase-4-web`.

@@ -14,6 +14,7 @@
 **Posicionamiento honesto (innegociable):** el escaneo automático detecta ~30-40% de los problemas WCAG. El producto se presenta SIEMPRE como **"diagnóstico inicial"**, nunca como certificación de cumplimiento. El disclaimer aparece en la web y en cada informe. La auditoría manual completa es el servicio humano (freelance) que la herramienta puede generar como lead — a ofrecer solo cuando la práctica manual esté consolidada (ver sección 8: upskilling integrado).
 
 **Doble entregable estratégico:**
+
 - **Motor open source** (repositorio público GitHub): el escáner CLI. Nombre propuesto: `hotel-a11y-audit`.
 - **Capa web propia** (cerrada): la app que usa el motor y genera el informe bonito multilingüe con IA.
 
@@ -21,17 +22,18 @@
 
 ## 2. Usuarios y casos de uso
 
-| Usuario | Caso de uso |
-|---|---|
-| Hotelero / gestor de alojamiento | Introduce la URL de su web → recibe informe comprensible con fallos priorizados |
-| Fabrizio (uso propio) | Escanea 15-20 webs de hoteles de BCN → datos agregados para post LinkedIn + caso de estudio |
-| Developer del sector (comunidad) | Usa el motor CLI open source en sus propios proyectos / contribuye |
+| Usuario                          | Caso de uso                                                                                 |
+| -------------------------------- | ------------------------------------------------------------------------------------------- |
+| Hotelero / gestor de alojamiento | Introduce la URL de su web → recibe informe comprensible con fallos priorizados             |
+| Fabrizio (uso propio)            | Escanea 15-20 webs de hoteles de BCN → datos agregados para post LinkedIn + caso de estudio |
+| Developer del sector (comunidad) | Usa el motor CLI open source en sus propios proyectos / contribuye                          |
 
 ---
 
 ## 3. Alcance del MVP
 
 ### Dentro (v1)
+
 1. **Input:** una URL de web de hotel.
 2. **Escaneo automático** de hasta 5 páginas clave: home, listado/búsqueda de habitaciones, ficha de habitación, formulario/motor de reserva (primer paso), página de contacto. Descubrimiento simple: home + heurística de enlaces (keywords "book", "reserva", "rooms", "habitaciones", "contact"...).
 3. **Checks WCAG 2.1 AA** vía axe-core sobre navegador real (Playwright/Chromium): contraste, alt text, labels de formulario, orden de foco, navegación por teclado básica (tab-through programático del formulario de reserva), idioma del documento, nombres accesibles de botones/enlaces.
@@ -45,6 +47,7 @@
 9. **Disclaimer legal** visible: diagnóstico automático parcial ≠ certificación EAA.
 
 ### Fuera (explícitamente, v1)
+
 - Escaneo de flujos con login o pago real (solo primer paso del motor de reservas).
 - Monitorización periódica programada (v2 si hay tracción).
 - Cuentas de usuario / auth (v1 es anónimo con rate limit por IP).
@@ -88,6 +91,7 @@
 - El escaneo es asíncrono: la API crea un job, el front hace polling del estado (suficiente para MVP; nada de colas complejas).
 
 ### Modelo de datos (Supabase)
+
 ```sql
 scans:    id, url, status (pending|running|done|error), created_at
 pages:    id, scan_id, url, page_type, axe_json
@@ -95,6 +99,7 @@ reports:  id, scan_id, lang, executive_md, score, created_at
 ```
 
 ### Prompt del informe (esbozo)
+
 - Sistema: "Eres un consultor de accesibilidad que escribe para dueños de hoteles sin conocimientos técnicos. Prioriza impacto en reservas y riesgo EAA. Tono claro, sin alarmismo, sin jerga. Máx 5 hallazgos."
 - Input: JSON resumido de violaciones (agrupadas por regla, con conteos y páginas afectadas).
 - Output estructurado (JSON): { resumen, hallazgos: [{titulo, por_que_importa, prioridad, paginas}], siguiente_paso }.
@@ -135,13 +140,13 @@ Commits: `docs(engine): readme + examples` → `chore: MIT license`.
 
 ## 6. Riesgos y mitigaciones
 
-| Riesgo | Mitigación |
-|---|---|
+| Riesgo                                                                 | Mitigación                                                                                                                                                                                                                                                      |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Webs de hotel con motores de reserva en iframe de terceros (muy común) | Detectar iframe y reportarlo como hallazgo específico: "tu motor de reservas es de [proveedor]; el EAA también te aplica a ti como servicio — pregúntale a tu proveedor por su conformidad". Es información valiosísima para el hotelero, no un fallo del tool. |
-| Falsos positivos de axe-core | Mostrar severidad y enlazar a la regla oficial; el resumen IA solo usa violaciones critical/serious. |
-| Coste API Claude | Informe solo bajo demanda + caché por scan+idioma. Estimación: céntimos por informe. |
-| Scope creep | Todo lo que no esté en la sección 3 "Dentro" requiere terminar v1 primero. |
-| Aspecto legal (¿asesoramiento?) | Disclaimer: información general, no asesoramiento legal. Nunca prometer "cumplimiento". |
+| Falsos positivos de axe-core                                           | Mostrar severidad y enlazar a la regla oficial; el resumen IA solo usa violaciones critical/serious.                                                                                                                                                            |
+| Coste API Claude                                                       | Informe solo bajo demanda + caché por scan+idioma. Estimación: céntimos por informe.                                                                                                                                                                            |
+| Scope creep                                                            | Todo lo que no esté en la sección 3 "Dentro" requiere terminar v1 primero.                                                                                                                                                                                      |
+| Aspecto legal (¿asesoramiento?)                                        | Disclaimer: información general, no asesoramiento legal. Nunca prometer "cumplimiento".                                                                                                                                                                         |
 
 ---
 
@@ -159,6 +164,7 @@ Commits: `docs(engine): readme + examples` → `chore: MIT license`.
 **Situación honesta:** la práctica WCAG actual es sobre todo automática (Lighthouse/axe). El servicio freelance de "auditoría manual" NO se ofrece hasta consolidar la práctica manual. Mientras tanto, el lenguaje correcto en web/informes/candidaturas es "diagnóstico automatizado + revisión guiada", no "auditoría manual experta".
 
 **Plan de entrenamiento incrustado en el proyecto (sin tiempo extra separado):**
+
 1. **Fase 1:** al validar el motor contra 3 webs reales, verificar a mano 5 violaciones reportadas por axe (¿son reales? ¿cómo se reproducen con teclado?). Aprende leyendo las reglas oficiales que enlaza cada hallazgo.
 2. **Fase 4:** el pase AA de la propia web se hace manual: teclado completo + NVDA (lector de pantalla gratuito para Windows). Primera experiencia real con tecnología asistiva.
 3. **Post-lanzamiento:** de los 15-20 hoteles escaneados para el post, elegir 2 y hacerles mini-revisión manual del formulario de reserva (30 min cada una). Con eso ya hay práctica manual demostrable y honesta.

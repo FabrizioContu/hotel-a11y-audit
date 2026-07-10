@@ -6,7 +6,23 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "hotel-a11y-audit": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc -p ."
+  },
+  "dependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "playwright": "^1.61.1"
   }
 }
